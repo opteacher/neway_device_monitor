@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'dart:ui' as ui;
 
 void main() {
 	SystemChrome.setPreferredOrientations([
@@ -79,22 +81,35 @@ class _MyHomePageState extends State<MyHomePage> {
 				padding: EdgeInsets.symmetric(vertical: 10, horizontal: ttlHpdg),
 				child: Text(title, style: TextStyle(color: Colors.white, fontSize: 20))
 			),
-			Padding(padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20), child: content)
+			Expanded(child: Center(child: content))
 		])));
 	}
 
 	Widget _genRecordTable() {
+		Color txtClr = Color(0xff616161);
 		List<TableRow> children = [
 			TableRow(children: [
-				Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(child: Text("时间"))),
-				Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(child: Text("事项"))),
-				Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(child: Text("报告编号"))),
+				Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(
+					child: Text("时间", style: TextStyle(color: txtClr))
+				)),
+				Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(
+					child: Text("事项", style: TextStyle(color: txtClr))
+				)),
+				Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(
+					child: Text("报告编号", style: TextStyle(color: txtClr))
+				)),
 			])
 		];
 		children.addAll(_svcRecords.map<TableRow>((rcd) => TableRow(children: [
-			Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(child: Text(rcd["time"]))),
-			Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(child: Text(rcd["event"]))),
-			Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(child: Text(rcd["id"]))),
+			Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(
+				child: Text(rcd["time"], style: TextStyle(color: txtClr))
+			)),
+			Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(
+				child: Text(rcd["event"], style: TextStyle(color: txtClr))
+			)),
+			Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Center(
+				child: Text(rcd["id"], style: TextStyle(color: txtClr))
+			)),
 		])));
 		return Container(decoration: BoxDecoration(
 			border: Border.all(color: Colors.grey[300])
@@ -112,14 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
 	@override
 	Widget build(BuildContext context) {
-		_infoTxtStyle = TextStyle(color: Color(0xffB4B4B4), fontSize: 20);
+		_infoTxtStyle = TextStyle(color: Color(0xff616161), fontSize: 20);
 
 		return Scaffold(
 			body: Padding(padding: EdgeInsets.all(10), child: Column(children: <Widget>[
 				Expanded(child: Row(children: <Widget>[
 					Expanded(flex: 2, child: Container(
-						margin: EdgeInsets.only(right: 20),
-						child: Image.asset("images/background.png")
+						margin: EdgeInsets.only(right: 20, bottom: 20),
+						child: DeviceStatus()
 					)),
 					Expanded(child: Column(children: <Widget>[
 						Container(
@@ -198,13 +213,13 @@ class _MyHomePageState extends State<MyHomePage> {
 								Text("发电机相关指标", style: TextStyle(color: Color(0xff616161), fontSize: 25))
 							]),
 							Divider(color: Color(0xffF8A72C), endIndent: 180),
-							Column(children: <Widget>[
-								Row(children: <Widget>[
+							Expanded(child: Column(children: <Widget>[
+								Expanded(child: Row(children: <Widget>[
 									_genElecIndicator("乐维服务时长", 0xffF8A72C, 30, Row(
 										mainAxisAlignment: MainAxisAlignment.center,
 										crossAxisAlignment: CrossAxisAlignment.end,
 										children: <Widget>[
-											Text(_svcTime.toString(), style: TextStyle(color: Color(0xffB4B4B4), fontSize: 35)),
+											Text(_svcTime.toString(), style: TextStyle(color: Color(0xffB4B4B4), fontSize: 50)),
 											Text("天", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 20))
 										]
 									)),
@@ -212,30 +227,33 @@ class _MyHomePageState extends State<MyHomePage> {
 										mainAxisAlignment: MainAxisAlignment.center,
 										crossAxisAlignment: CrossAxisAlignment.end,
 										children: <Widget>[
-											Text(_noFaultTime.toString(), style: TextStyle(color: Color(0xffB4B4B4), fontSize: 35)),
+											Text(_noFaultTime.toString(), style: TextStyle(color: Color(0xffB4B4B4), fontSize: 50)),
 											Text("天", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 20))
 										]
 									))
-								]),
-								Row(children: <Widget>[
+								])),
+								Expanded(child: Row(children: <Widget>[
 									_genElecIndicator("防冻液", 0xff77C0F4, 60, Row(
 										mainAxisAlignment: MainAxisAlignment.center,
 										crossAxisAlignment: CrossAxisAlignment.end,
 										children: <Widget>[
-											Text(_antifreezeTemp.toString(), style: TextStyle(color: Color(0xffB4B4B4), fontSize: 35)),
+											Text(_antifreezeTemp.toString(), style: TextStyle(color: Color(0xffB4B4B4), fontSize: 50)),
 											Text("℃", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 20))
 										]
 									)),
-									_genElecIndicator("蓄电池", 0xffC46262, 60, Column(children: <Widget>[
-										Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-											Text("${_batResistance}mΩ", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 20))
-										]),
-										Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-											Text("${_batLoadFactor}%", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 20))
+									_genElecIndicator("蓄电池", 0xffC46262, 60, Padding(
+										padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+										child: Column(children: <Widget>[
+											Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+												Text("${_batResistance}mΩ", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 30))
+											])),
+											Expanded(child: Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+												Text("${_batLoadFactor}%", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 30))
+											]))
 										])
-									]))
-								])
-							])
+									))
+								]))
+							]))
 						])),
 						VerticalDivider(width: 40),
 						Expanded(child: Column(children: <Widget>[
@@ -255,7 +273,7 @@ class _MyHomePageState extends State<MyHomePage> {
 								"2.建议发电机组不能再低于30%负荷下长时间进行\n"
 								"3.建议定期启动发电机组，运行10-15分钟，检查机组运行状况\n"
 								"4.机组需映入市电，为电池浮充及加热器提供电源\n"
-								"5.冬季建议开启加热器", style: TextStyle(color: Color(0xffB4B4B4), fontSize: 18)),
+								"5.冬季建议开启加热器", style: TextStyle(color: Color(0xff616161), fontSize: 18)),
 							Container(
 								margin: EdgeInsets.only(top: 20),
 								decoration: BoxDecoration(
@@ -266,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
 								),
 								child: Column(children: <Widget>[
 									Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-										Icon(Icons.label, color: Color(0xffC46262))
+										Image.asset("images/tags.png", color: Color(0xffC46262), width: 25, height: 25)
 									]),
 									Padding(
 										padding: EdgeInsets.only(left: 25, right: 25, bottom: 25, top: 3),
@@ -279,5 +297,100 @@ class _MyHomePageState extends State<MyHomePage> {
 				))
 			]))
 		);
+	}
+}
+
+class DeviceStatus extends StatefulWidget {
+	@override
+	State<StatefulWidget> createState() => _DeviceStatusState();
+}
+
+class _DeviceStatusState extends State<DeviceStatus> {
+	final _DeviceStatusPaint _paint = _DeviceStatusPaint();
+
+	@override
+	Widget build(BuildContext context) => GestureDetector(
+		onTapUp: (TapUpDetails detail) {
+			RenderBox rb = context.findRenderObject();
+			Offset lclPos = rb.globalToLocal(detail.globalPosition);
+			_paint.onTapUp(context, lclPos);
+		},
+		child: CustomPaint(
+			size: Size(1600, 900),
+			painter: _paint
+		)
+	);
+}
+
+class _DeviceStatusPaint extends CustomPainter {
+	bool _repaint = false;
+	ui.Image _imgBackground;
+	ui.Image _imgPointInfo;
+	static final double poiInfSize = 30;
+	final Map<Rect, bool> _rects = {
+		Rect.fromLTWH(50, 300, poiInfSize, poiInfSize): false,
+		Rect.fromLTWH(230, 320, poiInfSize, poiInfSize): false,
+		Rect.fromLTWH(400, 380, poiInfSize, poiInfSize): false,
+		Rect.fromLTWH(520, 120, poiInfSize, poiInfSize): false,
+		Rect.fromLTWH(630, 260, poiInfSize, poiInfSize): false
+	};
+
+	_DeviceStatusPaint() {
+		_initialize();
+	}
+
+	_initialize() async {
+		_imgBackground = await _loadImage("images/background.png");
+		_imgPointInfo = await _loadImage("images/info.png");
+		_repaint = true;
+	}
+
+	_loadImage(String asset) async {
+		ByteData data = await rootBundle.load(asset);
+		ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+		ui.FrameInfo fi = await codec.getNextFrame();
+		return fi.image;
+	}
+
+	@override
+	void paint(Canvas canvas, Size size) {
+		Paint _paint = Paint();
+		// 绘制背景
+		if (_imgBackground == null || _imgPointInfo == null) {
+			return;
+		}
+		canvas.drawImageRect(_imgBackground,
+			Rect.fromLTWH(0, 0, _imgBackground.width.toDouble(), _imgBackground.height.toDouble()),
+			Rect.fromLTWH(0, 0, size.width, size.height), _paint);
+
+		// 绘制点位
+		Rect rectPoiInf = Rect.fromLTWH(0, 0,
+			_imgPointInfo.width.toDouble(), _imgPointInfo.height.toDouble());
+		for (Rect rect in _rects.keys) {
+			canvas.drawImageRect(_imgPointInfo, rectPoiInf, rect, _paint);
+			if (_rects[rect]) {
+				_paint.color = Color(0x8802093D);
+				canvas.drawRect(Rect.fromLTWH(rect.right, rect.top, 300, 200), _paint);
+			}
+		}
+
+//		_paint
+//			..color = Colors.red
+//			..style = PaintingStyle.stroke;
+//		for (double i = 0; i < size.width; i += 50) {
+//			canvas.drawLine(Offset(i, 0), Offset(i, size.height), _paint);
+//		}
+//		for (double i = 0; i < size.height; i += 50) {
+//			canvas.drawLine(Offset(0, i), Offset(size.width, i), _paint);
+//		}
+	}
+
+	@override
+	bool shouldRepaint(CustomPainter oldDelegate) => true;
+
+	void onTapUp(BuildContext context, Offset pos) {
+		for (Rect rect in _rects.keys) {
+			_rects[rect] = rect.contains(pos);
+		}
 	}
 }
