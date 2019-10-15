@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -70,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
 		"event": "工程师张伟强 机组保养",
 		"id": "B190327"
 	}];
+	bool _showWarning = false;
 
 	Widget _genElecIndicator(String title, int ttlColor, double ttlHpdg, Widget content) {
 		return Expanded(child: Card(child: Column(children: <Widget>[
@@ -125,6 +128,45 @@ class _MyHomePageState extends State<MyHomePage> {
 		));
 	}
 
+	Widget _genInfoCard(String title, Color hcolor, Widget child) => Expanded(
+		child: GestureDetector(
+			child: Container(
+				decoration: BoxDecoration(
+					color: Color(0xffe6fafa),
+					border: Border.all(color: Color(0xffB4B4B4)),
+					borderRadius: BorderRadius.all(Radius.circular(10))
+				),
+				margin: EdgeInsets.only(bottom: 5),
+				child: Row(children: <Widget>[
+					Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+						Expanded(child: Container(
+							decoration: BoxDecoration(
+								color: hcolor,
+								borderRadius: BorderRadius.horizontal(left: Radius.circular(10))
+							),
+							padding: EdgeInsets.symmetric(horizontal: 10),
+							child: Center(child: Text(title, style: TextStyle(
+								color: Colors.white,
+								fontSize: 25
+							)))
+						))
+					]),
+					Padding(
+						padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10),
+						child: Center(child: child)
+					)
+				])
+			),
+			onTap: () => setState(() { _showWarning = !_showWarning; })
+		)
+	);
+
+	Widget _geninfoRecord(String content, [Color flgColor = const Color(0xffD8D8D8)]) => Row(children: <Widget>[
+		Icon(Icons.brightness_1, color: flgColor, size: 15),
+		VerticalDivider(),
+		Text(content, style: _infoTxtStyle)
+	]);
+
 	@override
 	Widget build(BuildContext context) {
 		_infoTxtStyle = TextStyle(color: Color(0xff616161), fontSize: 20);
@@ -133,72 +175,42 @@ class _MyHomePageState extends State<MyHomePage> {
 			body: Padding(padding: EdgeInsets.all(10), child: Column(children: <Widget>[
 				Expanded(child: Row(children: <Widget>[
 					Expanded(flex: 2, child: Container(
-						margin: EdgeInsets.only(right: 20, bottom: 20),
+						margin: EdgeInsets.only(right: 20, bottom: 5),
 						child: DeviceStatus()
 					)),
-					Expanded(child: Column(children: <Widget>[
-						Container(
-							decoration: BoxDecoration(
-								color: Color(0xffe6fafa),
-								border: Border.all(color: Color(0xffB4B4B4)),
-								borderRadius: BorderRadius.all(Radius.circular(10))
-							),
-							margin: EdgeInsets.only(bottom: 5),
-							child: Row(children: <Widget>[
-								Container(
-									decoration: BoxDecoration(
-										color: Color(0xff62c4ac),
-										borderRadius: BorderRadius.horizontal(left: Radius.circular(10))
-									),
-									padding: EdgeInsets.symmetric(horizontal: 10, vertical: 35),
-									child: Text("机\n组\n信\n息", style: TextStyle(
-										color: Colors.white,
-										fontSize: 25
-									))
-								),
-								Padding(padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10), child: Column(
-									crossAxisAlignment: CrossAxisAlignment.start,
-									children: <Widget>[
-										Text("乐维编号：$_id", style: _infoTxtStyle),
-										Text("名称：$_name", style: _infoTxtStyle),
-										Text("品牌：$_brand", style: _infoTxtStyle),
-										Text("生产日期：$_prodDate", style: _infoTxtStyle),
-										Text("位置：$_location", style: _infoTxtStyle),
-										Text("功率：${_power}KW", style: _infoTxtStyle),
-									]
-								))
-							])
-						),
-						Container(
-							decoration: BoxDecoration(
-								color: Color(0xffe6fafa),
-								border: Border.all(color: Color(0xffB4B4B4)),
-								borderRadius: BorderRadius.all(Radius.circular(10))
-							),
-							margin: EdgeInsets.only(top: 5),
-							child: Row(children: <Widget>[
-								Container(
-									decoration: BoxDecoration(
-										color: Color(0xff77C0F4),
-										borderRadius: BorderRadius.horizontal(left: Radius.circular(10))
-									),
-									padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-									child: Text("参\n考\n信\n息", style: TextStyle(
-										color: Colors.white,
-										fontSize: 25
-									))
-								),
-								Padding(padding: EdgeInsets.symmetric(horizontal: 35, vertical: 10), child: Column(
-									crossAxisAlignment: CrossAxisAlignment.start,
-									children: <Widget>[
-										Text("满载耗油：${_fullFuelHR}L/h", style: _infoTxtStyle),
-										Text("剩余燃油：${_leftFuel}L", style: _infoTxtStyle),
-										Text("蓄电池更换周期：$_recycle年", style: _infoTxtStyle),
-										Text("机组保养周期：$_mtcycle年", style: _infoTxtStyle)
-									]
-								))
-							])
-						)
+					Expanded(child: _showWarning ? Column(children: <Widget>[
+						_genInfoCard("报\n警\n显\n示", Color(0xffC46262), Column(
+							crossAxisAlignment: CrossAxisAlignment.start,
+							children: <Widget>[
+								_geninfoRecord("发电机房烟雾报警", Color(0xffC46262)),
+								_geninfoRecord("日用油箱液位低报警", Color(0xff85C25E)),
+								_geninfoRecord("蓄电池低压报警", Color(0xff85C25E)),
+								_geninfoRecord("冷却水液位低报警"),
+								_geninfoRecord("润滑油液位低"),
+								_geninfoRecord("液体泄露报警")
+							]
+						))
+					]) : Column(children: <Widget>[
+						_genInfoCard("机\n组\n信\n息", Color(0xff62c4ac), Column(
+							crossAxisAlignment: CrossAxisAlignment.start,
+							children: <Widget>[
+								_geninfoRecord("乐维编号：$_id"),
+								_geninfoRecord("名称：$_name"),
+								_geninfoRecord("品牌：$_brand"),
+								_geninfoRecord("生产日期：$_prodDate"),
+								_geninfoRecord("位置：$_location"),
+								_geninfoRecord("功率：${_power}KW")
+							]
+						)),
+						_genInfoCard("参\n考\n信\n息", Color(0xff77C0F4), Column(
+							crossAxisAlignment: CrossAxisAlignment.start,
+							children: <Widget>[
+								_geninfoRecord("满载耗油：${_fullFuelHR}L/h"),
+								_geninfoRecord("剩余燃油：${_leftFuel}L"),
+								_geninfoRecord("蓄电池更换周期：$_recycle年"),
+								_geninfoRecord("机组保养周期：$_mtcycle年")
+							]
+						))
 					])),
 				])),
 				Expanded(child: Container(
@@ -274,24 +286,26 @@ class _MyHomePageState extends State<MyHomePage> {
 								"3.建议定期启动发电机组，运行10-15分钟，检查机组运行状况\n"
 								"4.机组需映入市电，为电池浮充及加热器提供电源\n"
 								"5.冬季建议开启加热器", style: TextStyle(color: Color(0xff616161), fontSize: 18)),
-							Container(
-								margin: EdgeInsets.only(top: 20),
-								decoration: BoxDecoration(
-									gradient: LinearGradient(colors: [
-										Color(0xffF9F9F9),
-										Color(0xffD1D1D1)
-									], begin: Alignment.topCenter, end: Alignment.bottomCenter)
-								),
-								child: Column(children: <Widget>[
-									Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-										Image.asset("images/tags.png", color: Color(0xffC46262), width: 25, height: 25)
-									]),
-									Padding(
-										padding: EdgeInsets.only(left: 25, right: 25, bottom: 25, top: 3),
-										child: Text("近期天气炎热，机组加热器可以关闭", style: TextStyle(fontSize: 20, color: Color(0xff616161)))
-									)
-								])
-							)
+							Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+								Container(
+									margin: EdgeInsets.only(top: 20),
+									decoration: BoxDecoration(
+										gradient: LinearGradient(colors: [
+											Color(0xffF9F9F9),
+											Color(0xffD1D1D1)
+										], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+									),
+									child: Column(children: <Widget>[
+										Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+											Image.asset("images/tags.png", color: Color(0xffC46262), width: 25, height: 25)
+										]),
+										Padding(
+											padding: EdgeInsets.only(left: 25, right: 25, bottom: 25, top: 3),
+											child: Text("近期天气炎热，机组加热器可以关闭", style: TextStyle(fontSize: 20, color: Color(0xff616161)))
+										)
+									])
+								)
+							]))
 						]))
 					])
 				))
@@ -305,44 +319,95 @@ class DeviceStatus extends StatefulWidget {
 	State<StatefulWidget> createState() => _DeviceStatusState();
 }
 
-class _DeviceStatusState extends State<DeviceStatus> {
-	final _DeviceStatusPaint _paint = _DeviceStatusPaint();
-
-	@override
-	Widget build(BuildContext context) => GestureDetector(
-		onTapUp: (TapUpDetails detail) {
-			RenderBox rb = context.findRenderObject();
-			Offset lclPos = rb.globalToLocal(detail.globalPosition);
-			_paint.onTapUp(context, lclPos);
-		},
-		child: CustomPaint(
-			size: Size(1600, 900),
-			painter: _paint
-		)
-	);
+enum DetailLoc {
+	LT, LB, RT, RB
 }
 
-class _DeviceStatusPaint extends CustomPainter {
-	bool _repaint = false;
-	ui.Image _imgBackground;
-	ui.Image _imgPointInfo;
-	static final double poiInfSize = 30;
-	final Map<Rect, bool> _rects = {
-		Rect.fromLTWH(50, 300, poiInfSize, poiInfSize): false,
-		Rect.fromLTWH(230, 320, poiInfSize, poiInfSize): false,
-		Rect.fromLTWH(400, 380, poiInfSize, poiInfSize): false,
-		Rect.fromLTWH(520, 120, poiInfSize, poiInfSize): false,
-		Rect.fromLTWH(630, 260, poiInfSize, poiInfSize): false
-	};
+class PoiInfo {
+	static final double SIZE = 40;
+	Offset _location;
+	final String _name;
+	final String _type;
+	String _status;
+	DetailLoc _dtlLoc;
+	bool _show = false;
 
-	_DeviceStatusPaint() {
+	PoiInfo(this._location, this._name, this._type, this._status, this._dtlLoc);
+
+	bool get show => _show;
+	set show(bool value) {
+		_show = value;
+	}
+	String get status => _status;
+	String get type => _type;
+	String get name => _name;
+	Offset get location => _location;
+	set location(Offset value) {
+		_location = value;
+	}
+	DetailLoc get dtlLoc => _dtlLoc;
+}
+
+class _DeviceStatusState extends State<DeviceStatus> with SingleTickerProviderStateMixin {
+	ui.Image _imgBackground;
+	AnimationController _controller;
+	Animation<Color> _animation;
+	Color _infoColor;
+	final List<PoiInfo> _poiInfos = [
+		PoiInfo(Offset(1 / 27.33,   1 / 3.208),     "烟感器", "aabb", "正常", DetailLoc.LT),
+		PoiInfo(Offset(1 / 16.4,    1 / 1.35),      "烟感器", "aabb", "正常", DetailLoc.LB),
+		PoiInfo(Offset(1 / 3.57,    1 / 1.25),      "烟感器", "aabb", "正常", DetailLoc.LB),
+		PoiInfo(Offset(1 / 2.05,    -PoiInfo.SIZE), "烟感器", "aabb", "正常", DetailLoc.LB),
+		PoiInfo(Offset(1 / 1.58,    1 / 3.208),     "烟感器", "aabb", "正常", DetailLoc.LT),
+		PoiInfo(Offset(1 / 1.3,     1 / 1.48),      "烟感器", "aabb", "正常", DetailLoc.RB)
+	];
+	double _cvsWid = 0;
+	double _cvsHgt = 0;
+
+	@override
+	void initState() {
+		super.initState();
+
 		_initialize();
+		_startAnim();
+	}
+
+	_startAnim() {
+		_controller = AnimationController(
+			duration: const Duration(seconds: 1),
+			vsync: this
+		);
+		var tween = ColorTween(begin: Color(0xFFF79D27), end: Color(0x00F79D27));
+		_animation = tween.animate(_controller);
+		_animation.addListener(() {
+			_infoColor = _animation.value;
+			setState(() {});
+		});
+		_animation.addStatusListener((status) {
+			switch (status) {
+				case AnimationStatus.forward:
+					break;
+				case AnimationStatus.reverse:
+					break;
+				case AnimationStatus.completed:
+					_controller.reverse();
+					break;
+				case AnimationStatus.dismissed:
+					_controller.forward();
+					break;
+			}
+		});
+		_controller.forward();
+	}
+
+	@override
+	void dispose() {
+		super.dispose();
+		_controller.dispose();
 	}
 
 	_initialize() async {
 		_imgBackground = await _loadImage("images/background.png");
-		_imgPointInfo = await _loadImage("images/info.png");
-		_repaint = true;
 	}
 
 	_loadImage(String asset) async {
@@ -353,25 +418,121 @@ class _DeviceStatusPaint extends CustomPainter {
 	}
 
 	@override
-	void paint(Canvas canvas, Size size) {
-		Paint _paint = Paint();
-		// 绘制背景
-		if (_imgBackground == null || _imgPointInfo == null) {
+	Widget build(BuildContext context) => GestureDetector(
+		onTapUp: (TapUpDetails detail) {
+			RenderBox rb = context.findRenderObject();
+			Offset pos = rb.globalToLocal(detail.globalPosition);
+			for (PoiInfo info in _poiInfos) {
+				if (Rect.fromLTWH(
+					info.location.dx, info.location.dy,
+					PoiInfo.SIZE, PoiInfo.SIZE
+				).contains(pos)) {
+					info.show = !info.show;
+					setState(() {});
+					break;
+				}
+			}
+		},
+		child: CustomPaint(
+			size: Size(1600, 900),
+			painter: _DeviceStatusView(this)
+		)
+	);
+
+	List<PoiInfo> get poiInfos => _poiInfos;
+
+	Color get infoColor => _infoColor;
+
+	ui.Image get imgBackground => _imgBackground;
+
+	set cvsSize(Size size) {
+		if (_cvsWid != 0 && _cvsHgt != 0) {
 			return;
 		}
-		canvas.drawImageRect(_imgBackground,
-			Rect.fromLTWH(0, 0, _imgBackground.width.toDouble(), _imgBackground.height.toDouble()),
+		_cvsWid = size.width;
+		_cvsHgt = size.height;
+		for (PoiInfo info in _poiInfos) {
+			info.location = Offset(
+				info.location.dx > 0 ? _cvsWid * info.location.dx : _cvsWid + info.location.dx,
+				info.location.dy > 0 ? _cvsHgt * info.location.dy : _cvsHgt + info.location.dy
+			);
+		}
+	}
+}
+
+class _DeviceStatusView extends CustomPainter {
+	final _DeviceStatusState _state;
+
+	_DeviceStatusView(this._state);
+
+	@override
+	void paint(Canvas canvas, Size size) {
+		// 绘制背景
+		if (_state.imgBackground == null) {
+			_state.cvsSize = size;
+			return;
+		}
+		Paint _paint = Paint();
+		canvas.drawImageRect(_state.imgBackground,
+			Rect.fromLTWH(0, 0,
+				_state.imgBackground.width.toDouble(),
+				_state.imgBackground.height.toDouble()),
 			Rect.fromLTWH(0, 0, size.width, size.height), _paint);
 
 		// 绘制点位
-		Rect rectPoiInf = Rect.fromLTWH(0, 0,
-			_imgPointInfo.width.toDouble(), _imgPointInfo.height.toDouble());
-		for (Rect rect in _rects.keys) {
-			canvas.drawImageRect(_imgPointInfo, rectPoiInf, rect, _paint);
-			if (_rects[rect]) {
-				_paint.color = Color(0x8802093D);
-				canvas.drawRect(Rect.fromLTWH(rect.right, rect.top, 300, 200), _paint);
+		TextPainter icnTp = TextPainter(textDirection: TextDirection.rtl);
+		for (PoiInfo info in _state.poiInfos) {
+			Color color = _state.infoColor;
+			if (info.show) {
+				color = Color(0xFFF79D27);
+
+				// 绘制点位信息
+				double left = info.location.dx + PoiInfo.SIZE;
+				double top = info.location.dy;
+				double hpadding = 15;
+				double vpadding = 10;
+
+				TextPainter dtlTp = TextPainter(textDirection: TextDirection.ltr);
+				dtlTp.text = TextSpan(
+					text: "名称：${info.name}\n型号：${info.type}\n状态：${info.status}",
+					style: TextStyle(fontSize: 20, color: Colors.white)
+				);
+				dtlTp.layout();
+
+				_paint.color = Color(0xAA02093D);
+				double dtlX = left;
+				double dtlY = top;
+				double dtlWid = dtlTp.size.width + hpadding * 2;
+				double dtlHgt = dtlTp.size.height + vpadding * 2;
+				switch (info.dtlLoc) {
+					case DetailLoc.LT:
+						break;
+					case DetailLoc.LB:
+						dtlY -= dtlHgt - PoiInfo.SIZE;
+						break;
+					case DetailLoc.RT:
+						dtlX -= dtlWid + PoiInfo.SIZE;
+						break;
+					case DetailLoc.RB:
+						dtlY -= dtlHgt - PoiInfo.SIZE;
+						dtlX -= dtlWid + PoiInfo.SIZE;
+						break;
+				}
+				canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(
+					dtlX, dtlY, dtlWid, dtlHgt
+				), Radius.circular(8)), _paint);
+				dtlTp.paint(canvas, Offset(dtlX + hpadding, dtlY + vpadding));
 			}
+			icnTp.text = TextSpan(
+				text: String.fromCharCode(Icons.info.codePoint),
+				style: TextStyle(
+					fontSize: PoiInfo.SIZE,
+					fontFamily: Icons.info.fontFamily,
+					color: color
+				)
+			);
+			icnTp.layout();
+			icnTp.paint(canvas, info.location);
 		}
 
 //		_paint
@@ -387,10 +548,4 @@ class _DeviceStatusPaint extends CustomPainter {
 
 	@override
 	bool shouldRepaint(CustomPainter oldDelegate) => true;
-
-	void onTapUp(BuildContext context, Offset pos) {
-		for (Rect rect in _rects.keys) {
-			_rects[rect] = rect.contains(pos);
-		}
-	}
 }
