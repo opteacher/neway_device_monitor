@@ -170,7 +170,43 @@ class _MyHomePageState extends State<MyHomePage> {
 	@override
 	Widget build(BuildContext context) {
 		_infoTxtStyle = TextStyle(color: Color(0xff616161), fontSize: 20);
-
+		Timer(Duration(milliseconds: 500), () {
+			Color blackClr = Color(0xff616161);
+			Color blueClr = Color(0xff417DE7);
+			Color redClr = Color(0xffC46262);
+			showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+				shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+				titlePadding: EdgeInsets.all(0),
+				title: Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+					IconButton(icon: Icon(Icons.cancel, color: Color(0xffC6CCD5)), onPressed: () {
+						Navigator.pop(context);
+					})
+				]),
+				contentPadding: EdgeInsets.only(bottom: 35),
+				content: Container(
+					width: 500,
+					height: 200,
+					child: Center(child: Column(
+						mainAxisAlignment: MainAxisAlignment.center,
+						children: <Widget>[
+							Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+								Icon(Icons.warning, size: 80, color: redClr),
+								VerticalDivider(color: Colors.white),
+								Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+									Text("烟雾报警器报警！", style: TextStyle(fontSize: 30, color: redClr)),
+									Text("请尽快联系我司", style: TextStyle(fontSize: 20, color: blackClr)),
+									Row(children: <Widget>[
+										Text("联系电话", style: TextStyle(fontSize: 20, color: blackClr)),
+										VerticalDivider(color: Colors.white),
+										Text("400-660-9233", style: TextStyle(fontSize: 20, color: blueClr))
+									])
+								])
+							])
+						]
+					))
+				)
+			));
+		});
 		return Scaffold(
 			body: Padding(padding: EdgeInsets.all(10), child: Column(children: <Widget>[
 				Expanded(child: Row(children: <Widget>[
