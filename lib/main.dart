@@ -190,15 +190,20 @@ class _MyHomePageState extends State<MyHomePage> {
 						mainAxisAlignment: MainAxisAlignment.center,
 						children: <Widget>[
 							Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-								Icon(Icons.warning, size: 80, color: redClr),
+								Image.asset("images/warning.png", width: 80, height: 80),
 								VerticalDivider(color: Colors.white),
 								Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
 									Text("烟雾报警器报警！", style: TextStyle(fontSize: 30, color: redClr)),
 									Text("请尽快联系我司", style: TextStyle(fontSize: 20, color: blackClr)),
 									Row(children: <Widget>[
 										Text("联系电话", style: TextStyle(fontSize: 20, color: blackClr)),
-										VerticalDivider(color: Colors.white),
-										Text("400-660-9233", style: TextStyle(fontSize: 20, color: blueClr))
+										FlatButton(
+											padding: EdgeInsets.symmetric(horizontal: 10),
+											child: Text("400-660-9233", style: TextStyle(fontSize: 20, color: blueClr)),
+											onPressed: () {
+												// 打电话
+											}
+										)
 									])
 								])
 							])
@@ -399,6 +404,7 @@ class _DeviceStatusState extends State<DeviceStatus> with SingleTickerProviderSt
 	];
 	double _cvsWid = 0;
 	double _cvsHgt = 0;
+	bool _showDetailList = false;
 
 	@override
 	void initState() {
@@ -454,10 +460,11 @@ class _DeviceStatusState extends State<DeviceStatus> with SingleTickerProviderSt
 	}
 
 	@override
-	Widget build(BuildContext context) => GestureDetector(
+	Widget build(BuildContext context) => !_showDetailList ? GestureDetector(
 		onTapUp: (TapUpDetails detail) {
 			RenderBox rb = context.findRenderObject();
 			Offset pos = rb.globalToLocal(detail.globalPosition);
+			bool clkPoiInfo = false;
 			for (PoiInfo info in _poiInfos) {
 				if (Rect.fromLTWH(
 					info.location.dx, info.location.dy,
@@ -465,14 +472,39 @@ class _DeviceStatusState extends State<DeviceStatus> with SingleTickerProviderSt
 				).contains(pos)) {
 					info.show = !info.show;
 					setState(() {});
+					clkPoiInfo = true;
 					break;
 				}
+			}
+			if (!clkPoiInfo) {
+				setState(() {
+					_showDetailList = true;
+				});
 			}
 		},
 		child: CustomPaint(
 			size: Size(1600, 900),
 			painter: _DeviceStatusView(this)
 		)
+	) : GestureDetector(
+		onTap: () => setState(() {
+			_showDetailList = false;
+		}),
+		child: ListView(children: _poiInfos.map<Widget>((info) => Column(children: <Widget>[
+			ListTile(
+				title: Text(info.name, style: TextStyle(color: Color(0xff616161), fontSize: 20)),
+				subtitle: Text(info.type),
+				trailing: Container(
+					decoration: BoxDecoration(
+						color: Colors.lightGreen,
+						borderRadius: BorderRadius.all(Radius.circular(10))
+					),
+					padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+					child: Text(info.status, style: TextStyle(color: Colors.white, fontSize: 20)),
+				),
+			),
+			Divider()
+		])).toList()),
 	);
 
 	List<PoiInfo> get poiInfos => _poiInfos;
